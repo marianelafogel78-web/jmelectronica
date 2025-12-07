@@ -59,6 +59,7 @@
             text-align: center; transition: transform 0.2s;
         }
         .producto-card:hover { transform: translateY(-5px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        /* TAMAÑO DE FOTO A 300PX (Confirmado por el usuario) */
         .producto-card img { width: 100%; height: 300px; object-fit: cover; border-radius: 4px; margin-bottom: 10px; }
         .producto-card h4 { margin: 5px 0; font-size: 1.1em; min-height: 40px; }
         .producto-card p.precio { font-weight: bold; color: var(--color-acento); font-size: 1.2em; margin: 10px 0; }
@@ -75,21 +76,20 @@
         .carrito-item input { width: 50px; text-align: center; padding: 5px; border: 1px solid var(--color-secundario); margin: 0 10px; }
         #resumen-carrito p { font-size: 1.5em; font-weight: bold; color: var(--color-texto); }
 
-        /* BOTONES DE FILTRO (NUEVO) */
-        .btn-filtro {
-            padding: 8px 15px; margin: 5px;
-            background-color: var(--color-primario);
+        /* Estilo para el nuevo SELECT de filtros */
+        #select-filtros-tienda {
+            padding: 10px;
+            margin: 10px auto 20px auto;
+            border: 2px solid var(--color-acento);
+            border-radius: 5px;
+            background-color: var(--color-fondo);
             color: var(--color-texto);
-            border: 1px solid var(--color-secundario);
-            border-radius: 5px; cursor: pointer;
-            font-weight: bold; text-transform: uppercase;
-            transition: background-color 0.2s, color 0.2s;
-        }
-        .btn-filtro:hover { background-color: var(--color-secundario); }
-        .btn-filtro.active { 
-            background-color: var(--color-acento); 
-            color: white; 
-            border-color: var(--color-acento);
+            font-weight: bold;
+            text-transform: uppercase;
+            width: 80%; /* Ancho ajustado para centrar */
+            max-width: 400px;
+            cursor: pointer;
+            display: block;
         }
 
         /* BOTONES GENERALES */
@@ -182,9 +182,8 @@
             
             <section id="filtros-categoria" style="text-align: center; margin-bottom: 20px;">
                 <h3>FILTRAR POR CATEGORÍA:</h3>
-                <div id="contenedor-filtros-btn">
-                    <button class="btn-filtro active" onclick="filtrarProductos('TODOS', this)">TODOS</button>
-                    </div>
+                <select id="select-filtros-tienda" onchange="filtrarProductos(this.value)">
+                    </select>
             </section>
             
             <section id="productos-seccion">
@@ -272,8 +271,10 @@
                 if (!respProd.ok) throw new Error("No se pudo cargar productos.json");
                 productos = await respProd.json();
 
+                // Llama al nuevo renderizador de filtros
                 renderizarFiltros(); 
-                renderizarProductos();
+                // Asegura que al cargar, se muestren TODOS los productos
+                filtrarProductos('TODOS');
                 renderizarCarrito();
                 document.getElementById('loading-message').style.display = 'none';
 
@@ -358,7 +359,7 @@
         };
 
         // =================================================================
-        // 4. TIENDA Y FILTRADO
+        // 4. TIENDA Y FILTRADO (AHORA CON SELECT)
         // =================================================================
         
         const renderizarProductos = (productosParaMostrar = productos, filtroActivo = 'TODOS') => {
@@ -389,7 +390,7 @@
                 categoriasProductos[categoria].forEach(producto => {
                     contenedor.innerHTML += `
                         <div class="producto-card">
-                            <img src="${producto.foto}" alt="${producto.nombre}" onerror="this.onerror=null; this.src='https://placehold.co/300x200/ADD8E6/000?text=FOTO+NO+DISPONIBLE';">
+                            <img src="${producto.foto}" alt="${producto.nombre}" onerror="this.onerror=null; this.src='https://placehold.co/300x300/ADD8E6/000?text=FOTO+NO+DISPONIBLE';">
                             <h4>${producto.nombre}</h4>
                             <p class="precio">$${producto.precio.toFixed(2)}</p>
                             <button onclick="agregarAlCarrito(${producto.id})">AGREGAR AL CARRITO</button>
@@ -400,33 +401,28 @@
             });
         };
         
+        // Función actualizada para llenar el nuevo SELECT
         const renderizarFiltros = () => {
-            const contenedorFiltros = document.getElementById('contenedor-filtros-btn');
-            if (!contenedorFiltros) return;
+            const selectFiltros = document.getElementById('select-filtros-tienda');
+            if (!selectFiltros) return;
 
-            while (contenedorFiltros.children.length > 1) {
-                contenedorFiltros.removeChild(contenedorFiltros.lastChild);
-            }
+            let htmlOptions = `<option value="TODOS">TODOS LOS PRODUCTOS</option>`;
             
+            // Obtenemos las categorías únicas de los productos y las ordenamos
             const categoriasUnicas = new Set(productos.map(p => p.categoria).filter(c => c && c.trim() !== ''));
-            
             const categoriasOrdenadas = Array.from(categoriasUnicas).sort();
 
             categoriasOrdenadas.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-filtro';
-                btn.textContent = cat;
-                btn.setAttribute('onclick', `filtrarProductos('${cat}', this)`);
-                contenedorFiltros.appendChild(btn);
+                htmlOptions += `<option value="${cat}">${cat}</option>`;
             });
+            
+            selectFiltros.innerHTML = htmlOptions;
+            // Asegura que al iniciar, el select esté en "TODOS"
+            selectFiltros.value = 'TODOS';
         };
 
-        const filtrarProductos = (categoria, boton, soloRenderizar = false) => {
-            if (!soloRenderizar && boton) {
-                document.querySelectorAll('#contenedor-filtros-btn .btn-filtro').forEach(b => b.classList.remove('active'));
-                boton.classList.add('active');
-            }
-
+        // Función de filtrado simplificada para recibir el valor del select
+        const filtrarProductos = (categoria) => {
             let productosFiltrados = [];
             if (categoria === 'TODOS') {
                 productosFiltrados = productos;
@@ -435,10 +431,6 @@
             }
 
             renderizarProductos(productosFiltrados, categoria); 
-            
-            if (!soloRenderizar) {
-                 document.getElementById('productos-seccion').scrollIntoView({ behavior: 'smooth' });
-            }
         };
 
 
@@ -565,7 +557,7 @@
 
             categorias.push(nuevaCat);
             renderizarSelectCategorias(); 
-            renderizarFiltros(); 
+            renderizarFiltros(); // Actualiza el select de la tienda
             inputCategoria.value = '';
             mostrarMensaje("CATEGORÍA AGREGADA (RECUERDA DESCARGAR JSON).");
         };
@@ -580,7 +572,7 @@
                     categorias = categorias.filter(cat => cat !== catAEliminar);
                     productos.forEach(p => { if (p.categoria === catAEliminar) p.categoria = ''; });
                     renderizarSelectCategorias(); 
-                    renderizarFiltros(); 
+                    renderizarFiltros(); // Actualiza el select de la tienda
                     filtrarYRenderizarProductos(); 
                     renderizarProductos(); 
                     mostrarMensaje("CATEGORÍA ELIMINADA. DESCARGA LOS JSON PARA GUARDAR.");
@@ -636,8 +628,8 @@
 
             filtrarYRenderizarProductos(); 
             limpiarFormulario();
-            renderizarFiltros(); 
-            renderizarProductos(); 
+            renderizarFiltros(); // Actualiza el select de la tienda
+            filtrarProductos('TODOS'); // Muestra todo en la tienda al guardar
             mostrarMensaje("PRODUCTO PROCESADO. NO OLVIDES DESCARGAR JSON.");
         };
 
@@ -668,6 +660,7 @@
                 if (confirmado) {
                     productos = productos.filter(p => p.id !== id);
                     filtrarYRenderizarProductos(); 
+                    renderizarFiltros(); // Actualiza el select de la tienda
                     renderizarProductos();
                     mostrarMensaje("PRODUCTO ELIMINADO. DESCARGA EL JSON.");
                 }
@@ -703,8 +696,12 @@
             
             if (id === 'tienda') {
                 renderizarCarrito(); 
-                const todosButton = document.querySelector('#contenedor-filtros-btn .btn-filtro:first-child');
-                if(todosButton) filtrarProductos('TODOS', todosButton, true); 
+                // Al volver a la tienda, se asegura que el filtro esté en 'TODOS'
+                const selectFiltros = document.getElementById('select-filtros-tienda');
+                if(selectFiltros) {
+                    selectFiltros.value = 'TODOS';
+                    filtrarProductos('TODOS'); 
+                }
             }
         };
 
