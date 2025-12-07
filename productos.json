@@ -1,0 +1,261 @@
+[
+  {
+    "id": 1,
+    "nombre": "RECEPTOR BT",
+    "precio": 2510,
+    "foto": "https://i.postimg.cc/xjbNtv2s/CARWIRWLES.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 2,
+    "nombre": "CABLE USB C/IPHONE 1M",
+    "precio": 2085,
+    "foto": "https://i.postimg.cc/Jh3nHw5m/CABLE1M.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 3,
+    "nombre": "USB EXTENDER",
+    "precio": 3360,
+    "foto": "https://i.postimg.cc/Th8jwQX2/USB.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 4,
+    "nombre": "CARGADOR RAPIDO ROYALCELL 5.0A",
+    "precio": 3790,
+    "foto": "https://i.postimg.cc/PxSyymsB/cargador5A.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 5,
+    "nombre": "AURICULAR INALAMBRICO ULTRAPODS PRO IP4",
+    "precio": 6267,
+    "foto": "https://i.postimg.cc/MpXSgkBn/AURI-ULTRA-PRO.jpg",
+    "categoria": "AURICULARES INALAMBRICOS"
+  },
+  {
+    "id": 6,
+    "nombre": "CARGADOR CABEZAL BOLSITA 1A TIME",
+    "precio": 1460,
+    "foto": "https://i.postimg.cc/3Nn3Xqz6/TMCC112.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 7,
+    "nombre": "ADAPTADOR INTERNACIONAL VIAJERO 931L",
+    "precio": 3470,
+    "foto": "https://i.postimg.cc/hj1sYYQr/ADAPTADOR.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 8,
+    "nombre": "CABEZAL CARGADOR 25W",
+    "precio": 4870,
+    "foto": "https://i.postimg.cc/KztWhgND/SM-27.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 9,
+    "nombre": "CARGADOR 20W C/ CABLE TIPO C A TIPO C",
+    "precio": 4200,
+    "foto": "https://i.postimg.cc/fLzFcbZz/TMCC408.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 10,
+    "nombre": "CARGADOR CELU TIME PD 30W",
+    "precio": 5630,
+    "foto": "https://i.postimg.cc/90DJvKF6/CC-59251.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 11,
+    "nombre": "CARGADOR DE AUTO 2USB",
+    "precio": 1660,
+    "foto": "https://i.postimg.cc/qBtffZYB/CAR-53006.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 12,
+    "nombre": "CARGADOR DE AUTO CARGA RAPIDA 3.1 A",
+    "precio": 3150,
+    "foto": "https://i.postimg.cc/Wz956m8S/CAR-53004.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 13,
+    "nombre": "CARGADOR DE AUTO PD 20W+ QC 3.0",
+    "precio": 3850,
+    "foto": "https://i.postimg.cc/vHRNJ8fX/CAR-53001.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 14,
+    "nombre": "CARGADOR PUXIDA IPHONE 4.2",
+    "precio": 5347,
+    "foto": "https://i.postimg.cc/MH2rXtkX/Whats-App-Image-2025-09-10-at-20-57-10-2.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 15,
+    "nombre": "CARGADOR PUXIDA TIPO C 3.1",
+    "precio": 4080,
+    "foto": "https://i.postimg.cc/g2s95CCs/Whats-App-Image-2025-09-10-at-20-57-10.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 16,
+    "nombre": "CARGADOR PUXIDA V8 3.1",
+    "precio": 3850,
+    "foto": "https://i.postimg.cc/025bhs3X/Whats-App-Image-2025-09-10-at-23-33-24.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 17,
+    "nombre": "CARGADOR LEGATUS TIPO C 5.0 2USB",
+    "precio": 3970,
+    "foto": "https://i.postimg.cc/9FbJpsxN/CARGADOR-LEGATUS.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 18,
+    "nombre": "CARGADOR ROYALCEL V8 5A",
+    "precio": 3700,
+    "foto": "https://i.postimg.cc/43XfHbgL/Whats-App-Image-2025-09-10-at-20-57-09-1.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 19,
+    "nombre": "CARGADOR TIME 3.1 TIPO C 2USB",
+    "precio": 3450,
+    "foto": "https://i.postimg.cc/02Vpj2XG/TMCC818.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 20,
+    "nombre": "CABEZAL TIME USB TIPO C 18W",
+    "precio": 3310,
+    "foto": "https://i.postimg.cc/zGfFFRHP/TMCC607.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 21,
+    "nombre": "CARGADOR TIME V8 2.1A  CABLE DESMONTABLE",
+    "precio": 1890,
+    "foto": "https://i.postimg.cc/X7Pbn9Ww/TMCC216.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 22,
+    "nombre": "ESTACION DE CARGA 10 PUERTOS USB TOTAL 60W",
+    "precio": 17170,
+    "foto": "https://i.postimg.cc/DyB1qBvs/CAR-59051.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 23,
+    "nombre": "FUENTE ALIMENTACION UNIVERSAL 12V 3A",
+    "precio": 5205,
+    "foto": "https://i.postimg.cc/wMJg9Wwr/TMFT3009.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 24,
+    "nombre": "FUENTE DE ALIMENTACION 65W TIPOC/USB",
+    "precio": 21000,
+    "foto": "https://i.postimg.cc/QMy31LPP/CAR-59046.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 25,
+    "nombre": "TRANSMISOR DE AUTO 1 USB BT-MP3",
+    "precio": 4465,
+    "foto": "https://i.postimg.cc/q7DV6D9B/GTS-C935.jpg",
+    "categoria": "CARGADORES"
+  },
+  {
+    "id": 26,
+    "nombre": "OTG TIPO C",
+    "precio": 550,
+    "foto": "https://i.postimg.cc/d17mNw57/USBTC.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 27,
+    "nombre": "CABLE HDMI 1.5M",
+    "precio": 1950,
+    "foto": "https://i.postimg.cc/L4wfQkpq/CABLEUSB.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 28,
+    "nombre": "CAB-41011 CABLE TIPO C PUNTA DE METAL",
+    "precio": 1540,
+    "foto": "https://i.postimg.cc/wMK5Yd3B/CABLE-PUNTA-METAL.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 29,
+    "nombre": "CABLE MALLA TIPO C DATOS 3.1A X 1 UND",
+    "precio": 1330,
+    "foto": "https://i.postimg.cc/MpBny6Kj/CAB-41002.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 30,
+    "nombre": "CABLE TIME TIPO C A TIPO C 1M 45W",
+    "precio": 1450,
+    "foto": "https://i.postimg.cc/cJpyfWC6/CAB-44002.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 31,
+    "nombre": "CABLE V3 CON FILTRO 1.5M",
+    "precio": 1257,
+    "foto": "https://i.postimg.cc/c1BjwyVJ/CAB-45008.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 32,
+    "nombre": "CABLE V8 EN BOLSA TIME 3.1A",
+    "precio": 1135,
+    "foto": "https://i.postimg.cc/SxtJFnT5/TMCB-6232.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 33,
+    "nombre": "ADAPTADOR HDMI A VGA",
+    "precio": 3510,
+    "foto": "https://i.postimg.cc/5tPSZg9D/CAB-45003.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 34,
+    "nombre": "CABLE 2 A 1/ 1.5M (3.5 A 2RCA)",
+    "precio": 760,
+    "foto": "https://i.postimg.cc/xCSxNt5H/CAB-46008.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 35,
+    "nombre": "CABLE AUXILIAR 1,5M BOLSA",
+    "precio": 980,
+    "foto": "https://i.postimg.cc/Mphrk22Q/Whats-App-Image-2025-09-10-at-20-57-07-1.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 36,
+    "nombre": "CABLE AUXILIAR 1M CAJA",
+    "precio": 855,
+    "foto": "https://i.postimg.cc/pL4L5B3H/Whats-App-Image-2025-09-10-at-20-57-04-1.jpg",
+    "categoria": "CABLES"
+  },
+  {
+    "id": 37,
+    "nombre": "CABLE AUXILIAR 3M",
+    "precio": 1365,
+    "foto": "https://i.postimg.cc/K8SLVVP1/Captura-de-pantalla-2025-09-11-200114.png",
+    "categoria": "CABLES"
+  }
+]
