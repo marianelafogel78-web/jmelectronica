@@ -70,11 +70,12 @@
         .producto-card h4 { margin: 5px 0; font-size: 1.1em; min-height: 40px; }
         .producto-card p.precio { font-weight: bold; color: var(--color-acento); font-size: 1.2em; margin: 10px 0; }
         .producto-card button {
-            background-color: var(--color-secundario); color: var(--color-texto);
+            background-color: var(--color-acento); /* CAMBIO: Usa el Azul Marino (Acento) */
+            color: white; /* CAMBIO: Texto blanco para contraste con el fondo oscuro */
             border: none; padding: 8px 15px; border-radius: 4px;
             cursor: pointer; transition: background-color 0.2s;
         }
-        .producto-card button:hover { background-color: #C3B1E1; } /* Tono intermedio Ciruela */
+        .producto-card button:hover { background-color: #000080; } /* Azul más oscuro al pasar el mouse */
 
         #lista-carrito { margin-bottom: 20px; border: 1px dashed var(--color-borde); padding: 10px; }
         .carrito-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px dotted var(--color-borde); }
@@ -88,11 +89,11 @@
             margin: 10px auto 20px auto;
             border: 2px solid var(--color-acento);
             border-radius: 5px;
-            background-color: var(--color-fondo);
-            color: var(--color-texto);
+            background-color: white; /* FONDO BLANCO FIJO */
+            color: black; /* TEXTO NEGRO FIJO */
             font-weight: bold;
             text-transform: uppercase;
-            width: 80%; /* Ancho ajustado para centrar */
+            width: 80%;
             max-width: 400px;
             cursor: pointer;
             display: block;
@@ -117,7 +118,19 @@
         #btn-vaciar-carrito { background-color: #DC143C !important; color: white !important; }
         #btn-vaciar-carrito:hover { background-color: #B22222 !important; }
 
-        .tabs { display: flex; justify-content: center; margin-bottom: 20px; }
+        /* PESTAÑAS (TABS) FIJAS Y ESTILOS */
+        .tabs { 
+            display: flex; justify-content: center; 
+            margin-bottom: 20px; 
+            
+            /* ESTILOS PARA HACERLO FIJO: */
+            position: sticky; /* Sticky es más suave que fixed */
+            top: 0; /* Lo mantiene anclado al borde superior */
+            z-index: 10; /* Asegura que esté siempre por encima del contenido */
+            background-color: var(--color-fondo); /* Fondo suave */
+            padding: 10px 0; /* Espacio arriba y abajo */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); /* Sombra para que se note flotante */
+        }
         .tab-button {
             padding: 10px 20px; cursor: pointer; background-color: var(--color-primario);
             color: var(--color-texto); border: none; margin: 0 5px;
@@ -187,14 +200,12 @@
 
         <div id="tienda-panel" class="tab-content" style="display: block;">
             
-            <section id="filtros-categoria" style="text-align: center; margin-bottom: 20px;">
-                <h3>FILTRAR POR CATEGORÍA:</h3>
-                <select id="select-filtros-tienda" onchange="filtrarProductos(this.value)">
-                    </select>
-            </section>
-            
             <section id="productos-seccion">
                 <h2>🛍️ NUESTROS PRODUCTOS</h2>
+                
+                <select id="select-filtros-tienda" onchange="filtrarProductos(this.value)">
+                </select>
+                
                 <div id="loading-message">CARGANDO PRODUCTOS...</div>
                 </section>
         </div>
@@ -373,7 +384,13 @@
             const productosSeccion = document.getElementById('productos-seccion');
             if (!productosSeccion) return; 
 
-            productosSeccion.innerHTML = '<h2>🛍️ NUESTROS PRODUCTOS</h2><div id="loading-message" style="display:none"></div>';
+            // Se mantiene el h2 y se añade el select abajo, por lo que solo se reemplaza el contenido interno
+            const selectFiltrosElement = productosSeccion.querySelector('#select-filtros-tienda');
+            const selectFiltrosHTML = selectFiltrosElement ? selectFiltrosElement.outerHTML : '';
+
+
+            productosSeccion.innerHTML = '<h2>🛍️ NUESTROS PRODUCTOS</h2>' + selectFiltrosHTML + '<div id="loading-message" style="display:none"></div>';
+
 
             if (productosParaMostrar.length === 0 && filtroActivo !== 'TODOS') {
                 productosSeccion.innerHTML += `<p style="text-align: center; font-style: italic;">No hay productos para mostrar en la categoría "${filtroActivo}".</p>`;
@@ -525,7 +542,7 @@
                 mensaje += `* ${item.nombre} (x${item.cantidad}) - SUBT: $${subtotal.toFixed(2)}\n`;
             });
             mensaje += `\nTOTAL DE LA COMPRA: $${total.toFixed(2)}`;
-            mensaje += "\n\nGRACIAS POR TU COMPRA! NOS COMUNICAREMOS PRONTO PARA CONFIRMAR STOCK Y COORDINAR LA ENTREGA."; //
+            mensaje += "\n\nGRACIAS POR TU COMPRA! NOS COMUNICAREMOS PRONTO PARA CONFIRMAR STOCK Y COORDINAR LA ENTREGA."; 
             const numeroTelefono = "543571536378"; 
             window.open(`https://wa.me/${numeroTelefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
         };
