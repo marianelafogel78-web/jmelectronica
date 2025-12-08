@@ -517,7 +517,7 @@
 
         const generarMensajeWhatsApp = () => {
             if (carrito.length === 0) { mostrarMensaje("EL CARRITO ESTÁ VACÍO."); return; }
-            let mensaje = "HOLA! QUISIERA REALIZAR EL SIGUIENTE PEDIDO:\n\n";
+            let mensaje = "TU PEDIDO:\n\n";
             let total = 0;
             carrito.forEach(item => {
                 const subtotal = item.precio * item.cantidad;
@@ -525,7 +525,7 @@
                 mensaje += `* ${item.nombre} (x${item.cantidad}) - SUBT: $${subtotal.toFixed(2)}\n`;
             });
             mensaje += `\nTOTAL DE LA COMPRA: $${total.toFixed(2)}`;
-            mensaje += "\n\nPOR FAVOR, CONFIRMAR DISPONIBILIDAD Y MEDIO DE PAGO.";
+            mensaje += "\n\nGRACIAS POR TU COMPRA! NOS COMUNICAREMOS PRONTO PARA CONFIRMAR STOCK Y COORDINAR LA ENTREGA."; //
             const numeroTelefono = "543571536378"; 
             window.open(`https://wa.me/${numeroTelefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
         };
