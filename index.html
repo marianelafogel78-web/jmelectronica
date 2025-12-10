@@ -46,7 +46,9 @@
         }
         
         .categoria-titulo {
-            border-bottom: none; margin-bottom: 15px;
+            border-bottom: 2px solid var(--color-secundario); /* AÑADE LA LÍNEA LILA */
+            padding-bottom: 10px; /* Espacio entre el título y la línea */
+            margin-bottom: 15px;
             font-size: 1.8em; font-weight: 700;
         }
 
@@ -161,7 +163,15 @@
         .categoria-tag button { background: none; border: none; color: var(--color-texto); margin-left: 5px; cursor: pointer; font-weight: bold; font-size: 1em; padding: 0; line-height: 1; }
 
         @media (max-width: 768px) { .producto-card { width: calc(50% - 10px); } .carrito-item { flex-wrap: wrap; text-align: center; } .carrito-item input { margin: 5px 0; } }
-        @media (max-width: 480px) { .producto-card { width: 100%; } header h1 { font-size: 1.8em; } #resumen-carrito button { width: 100%; margin-top: 10px; } }
+        /* MEDIA QUERY PARA MÓVILES */
+        @media (max-width: 480px) { 
+            .producto-card { 
+                width: 100%; 
+                padding: 10px 5px; /* ¡IMPORTANTE! Reduce el relleno lateral a 5px para maximizar la foto */
+            } 
+            header h1 { font-size: 1.8em; } 
+            #resumen-carrito button { width: 100%; margin-top: 10px; } 
+        }
         
         .modal { display: none; position: fixed; z-index: 1001; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
         .modal-content { background-color: var(--color-fondo); margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 400px; border-radius: 8px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
@@ -215,9 +225,10 @@
                 <h2>🛒 CARRITO DE COMPRAS</h2>
                 <div id="lista-carrito"><p>EL CARRITO ESTÁ VACÍO.</p></div>
                 <div id="resumen-carrito">
+                    <input type="text" id="nombre-cliente-whatsapp" placeholder="ESCRIBA SU NOMBRE COMPLETO" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid var(--color-borde); border-radius: 5px;" required>
                     <p>TOTAL DE LA COMPRA: <span id="carrito-total">$0.00</span></p> 
                     <button id="btn-vaciar-carrito">VACIAR CARRITO</button>
-                    <button id="btn-comprar-whatsapp">📞 ENVIAR PEDIDO POR WASAP</button>
+                    <button id="btn-comprar-whatsapp">ENVIAR PEDIDO POR WSAPP</button>
                 </div>
             </section>
         </div>
@@ -271,36 +282,31 @@
 
     <script>
         // =================================================================
-        // 1. GESTIÓN DE DATOS Y CARGA DESDE JSON
+        // 1. GESTIÓN DE DATOS Y CARGA (TEMPORALMENTE HARDCODEADO PARA PRUEBAS LOCALES)
+        // **IMPORTANTE: Estos datos son TEMPORALES para que puedas ver y probar la tienda sin errores de carga local.**
+        // **Si subes esto a un servidor (GitHub, etc.), elimina estos datos temporales y usa el código original de 'cargarDatosIniciales'.**
         // =================================================================
         
-        let productos = [];
-        let categorias = [];
+        let categorias = ["CARGADORES", "ACCESORIOS", "AURICULARES"];
+        
+        let productos = [
+            { id: 1, nombre: "CARGADOR TURBO", precio: 15000.00, foto: "https://via.placeholder.com/300/191970/FFFFFF?text=CARGADOR+TURBO", categoria: "CARGADORES" },
+            { id: 2, nombre: "FUNDA SILICONA IPHONE", precio: 5500.00, foto: "https://via.placeholder.com/300/191970/FFFFFF?text=FUNDA+IPHONE", categoria: "ACCESORIOS" },
+            { id: 3, nombre: "AURICULAR BLUETOOTH SPORT", precio: 22000.00, foto: "https://via.placeholder.com/300/191970/FFFFFF?text=AURICULAR+SPORT", categoria: "AURICULARES" },
+            { id: 4, nombre: "CABLE USB REFORZADO", precio: 7000.00, foto: "https://via.placeholder.com/300/191970/FFFFFF?text=CABLE+REFORZADO", categoria: "ACCESORIOS" }
+        ];
+
         let carrito = JSON.parse(localStorage.getItem('carritoMM')) || []; 
         const CLAVE_ADMIN = "MM2025"; 
 
-        async function cargarDatosIniciales() {
-            try {
-                const respCat = await fetch('categorias.json');
-                if (!respCat.ok) throw new Error("No se pudo cargar categorias.json");
-                categorias = await respCat.json();
-
-                const respProd = await fetch('productos.json');
-                if (!respProd.ok) throw new Error("No se pudo cargar productos.json");
-                productos = await respProd.json();
-
-                // Llama al nuevo renderizador de filtros
-                renderizarFiltros(); 
-                // Asegura que al cargar, se muestren TODOS los productos
-                filtrarProductos('TODOS');
-                renderizarCarrito();
-                document.getElementById('loading-message').style.display = 'none';
-
-            } catch (error) {
-                console.error(error);
-                mostrarMensaje("ERROR AL CARGAR DATOS: " + error.message);
-                document.getElementById('loading-message').textContent = "ERROR CARGANDO DATOS.";
-            }
+        // ESTA FUNCIÓN AHORA SÓLO INICIALIZA LA TIENDA USANDO LOS DATOS TEMPORALES
+        function cargarDatosIniciales() {
+            // Llama al nuevo renderizador de filtros
+            renderizarFiltros(); 
+            // Asegura que al cargar, se muestren TODOS los productos
+            filtrarProductos('TODOS');
+            renderizarCarrito();
+            document.getElementById('loading-message').style.display = 'none';
         }
 
         // =================================================================
@@ -532,20 +538,44 @@
             });
         };
 
+        // FUNCIÓN CORREGIDA PARA WHATSAPP: MEJOR FORMATO Y MENSAJE FINAL SOLICITADO
         const generarMensajeWhatsApp = () => {
+            const inputNombre = document.getElementById('nombre-cliente-whatsapp');
+            
+            if (!inputNombre) {
+                mostrarMensaje("ERROR: EL CAMPO DE NOMBRE NO ESTÁ DISPONIBLE. RECARGUE LA PÁGINA."); 
+                return;
+            }
+
+            const nombreCliente = inputNombre.value.trim().toUpperCase();
+
             if (carrito.length === 0) { mostrarMensaje("EL CARRITO ESTÁ VACÍO."); return; }
-            let mensaje = "TU PEDIDO:\n\n";
+            
+            if (nombreCliente === "") {
+                mostrarMensaje("POR FAVOR, INGRESE SU NOMBRE COMPLETO.");
+                inputNombre.focus(); 
+                return; 
+            }
+
+            // El nombre aparece como título claro.
+            let mensaje = `*PEDIDO DE ${nombreCliente}*\n\n`; 
+            
             let total = 0;
             carrito.forEach(item => {
                 const subtotal = item.precio * item.cantidad;
                 total += subtotal;
-                mensaje += `* ${item.nombre} (x${item.cantidad}) - SUBT: $${subtotal.toFixed(2)}\n`;
+                // CORRECCIÓN DE FORMATO: Dos líneas para mejor legibilidad en WhatsApp
+                mensaje += `* ${item.nombre} (x${item.cantidad})\n  - SUBT: $${subtotal.toFixed(2)}\n`; 
             });
+            
             mensaje += `\nTOTAL DE LA COMPRA: $${total.toFixed(2)}`;
-            mensaje += "\n\nGRACIAS POR TU COMPRA! NOS COMUNICAREMOS PRONTO PARA CONFIRMAR STOCK Y COORDINAR LA ENTREGA."; 
+            // AQUI ESTÁ EL MENSAJE FINAL SOLICITADO EN MAYÚSCULAS
+            mensaje += "\n\nGRACIAS POR TU COMPRA! NOS COMUNICAREMOS PARA CONFIRMAR STOCK Y ENTREGA."; 
+            
             const numeroTelefono = "543571536378"; 
             window.open(`https://wa.me/${numeroTelefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
         };
+
 
         // =================================================================
         // 6. ADMINISTRACIÓN
@@ -741,7 +771,7 @@
             document.getElementById('btn-login')?.addEventListener('click', iniciarSesionAdmin);
             document.getElementById('form-producto')?.addEventListener('submit', gestionarFormularioProducto);
             document.getElementById('btn-cancelar-edicion')?.addEventListener('click', limpiarFormulario);
-            document.getElementById('form-categoria')?.addEventListener('click', gestionarFormularioCategoria);
+            document.getElementById('form-categoria')?.addEventListener('submit', gestionarFormularioCategoria);
             document.getElementById('buscador-admin')?.addEventListener('input', filtrarYRenderizarProductos);
         };
     </script>
