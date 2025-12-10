@@ -282,62 +282,62 @@
 
     <script>
         // =================================================================
-        // 1. GESTIÓN DE DATOS Y CARGA (CORREGIDO: AHORA LEYENDO JSON)
+        // 1. GESTIÓN DE DATOS Y CARGA (VERSIÓN FINAL PARA SERVIDOR)
+        // ESTA VERSIÓN INTENTA CARGAR DATOS DESDE LOS ARCHIVOS JSON EN EL SERVIDOR (GITHUB PAGES).
+        // SI FALLA, MUESTRA EL PRODUCTO DE PRUEBA Y PERMITE USAR EL PANEL ADMIN PARA CREAR Y DESCARGAR LOS ARCHIVOS.
         // =================================================================
         
-        // Se inicializan como arrays vacíos, serán poblados por fetch.
         let categorias = [];
         let productos = [];
-
+        
         let carrito = JSON.parse(localStorage.getItem('carritoMM')) || []; 
         const CLAVE_ADMIN = "MM2025"; 
 
-        /**
-         * Función asíncrona para cargar los datos de productos y categorías 
-         * desde los archivos JSON en el servidor (GitHub Pages).
-         */
+        // Producto de prueba para mostrar cuando la carga falla (el que genera el ítem "CARGA FALLIDA")
+        const PRODUCTO_CARGA_FALLIDA = { 
+            id: 9999, 
+            nombre: "CARGADOR DE PRUEBA (CARGA FALLIDA)", 
+            precio: 1.00, 
+            foto: "https://placehold.co/300x300/DC143C/FFFFFF?text=CARGA+FALLIDA", 
+            categoria: "PRUEBA" 
+        };
+        
         async function cargarDatosIniciales() {
-            document.getElementById('loading-message').textContent = 'CARGANDO PRODUCTOS...';
-            document.getElementById('loading-message').style.display = 'block';
-
             try {
-                // Ejecutar las dos peticiones fetch en paralelo
+                document.getElementById('loading-message').style.display = 'block';
+                
                 const [productosResponse, categoriasResponse] = await Promise.all([
-                    fetch('productos.json'),
-                    fetch('categorias.json')
+                    fetch('./productos.json'),
+                    fetch('./categorias.json')
                 ]);
 
-                if (!productosResponse.ok || !categoriasResponse.ok) {
-                    throw new Error('Error al cargar uno o ambos archivos JSON. Código de estado HTTP no OK.');
+                if (!productosResponse.ok) {
+                    console.warn("No se pudo cargar productos.json. Usando datos de prueba.");
+                    throw new Error("No se pudo cargar productos.json");
+                }
+                if (!categoriasResponse.ok) {
+                    console.warn("No se pudo cargar categorias.json. Usando datos de prueba.");
+                    throw new Error("No se pudo cargar categorias.json");
                 }
 
-                // Parsear las respuestas JSON
-                const productosData = await productosResponse.json();
-                const categoriasData = await categoriasResponse.json();
+                productos = await productosResponse.json();
+                categorias = await categoriasResponse.json();
 
-                // Asignar los datos a las variables globales
-                productos = productosData;
-                categorias = categoriasData;
-
-                // Inicializar la interfaz después de cargar los datos
+            } catch (error) {
+                console.error("Error al cargar datos iniciales. Usando producto de prueba:", error);
+                
+                // Si la carga falla, se inicializa con el producto de prueba y la categoría PRUEBA
+                productos = [PRODUCTO_CARGA_FALLIDA];
+                categorias = ["PRUEBA"];
+                mostrarMensaje("AVISO: No se encontraron los archivos JSON. Usa el panel Administrador para crearlos y descargarlos.");
+            } finally {
+                // Inicializa la aplicación con los datos cargados o de prueba
                 renderizarFiltros(); 
                 filtrarProductos('TODOS');
                 renderizarCarrito();
-                
-            } catch (error) {
-                console.error("No se pudieron cargar los datos de JSON:", error);
-                // Mostrar un mensaje de error claro al usuario
-                document.getElementById('loading-message').style.color = 'red';
-                document.getElementById('loading-message').textContent = '¡ERROR AL CARGAR PRODUCTOS! Verifique que los archivos JSON existen y son válidos. Detalles en la consola.';
-
-            } finally {
-                // Ocultar el mensaje de carga solo si no hubo un error de visualización
-                if (document.getElementById('loading-message').style.color !== 'red') {
-                    document.getElementById('loading-message').style.display = 'none';
-                }
+                document.getElementById('loading-message').style.display = 'none';
             }
         }
-
 
         // =================================================================
         // 2. LÓGICA DE DESCARGA DE JSON
@@ -469,7 +469,8 @@
             let htmlOptions = `<option value="TODOS">TODOS LOS PRODUCTOS</option>`;
             
             // Obtenemos las categorías únicas de los productos y las ordenamos
-            const categoriasUnicas = new Set(productos.map(p => p.categoria).filter(c => c && c.trim() !== ''));
+            // Nota: Aquí usamos el array 'categorias' global (cargado por fetch o fallback) para el filtro
+            const categoriasUnicas = new Set(categorias.filter(c => c && c.trim() !== ''));
             const categoriasOrdenadas = Array.from(categoriasUnicas).sort();
 
             categoriasOrdenadas.forEach(cat => {
@@ -526,12 +527,6 @@
                 carrito.forEach(item => {
                     const subtotal = item.precio * item.cantidad;
                     total += subtotal;
-                    
-                    // Buscamos el producto para obtener la foto (si es que la queremos)
-                    // Si se añade la imagen en un futuro, se modificaría esta sección.
-                    // const productoOriginal = productos.find(p => p.id === item.id);
-                    // const fotoUrl = productoOriginal ? productoOriginal.foto : '';
-
                     htmlContent += `
                         <div class="carrito-item">
                             <span class="item-nombre">${item.nombre}</span>
@@ -574,38 +569,31 @@
             });
         };
 
-        // FUNCIÓN FINAL VERIFICADA CON EL MENSAJE SOLICITADO
+        // FUNCIÓN MODIFICADA PARA INCLUIR EL NOMBRE DEL CLIENTE Y VALIDAR EL CAMPO
         const generarMensajeWhatsApp = () => {
             const inputNombre = document.getElementById('nombre-cliente-whatsapp');
-            
-            if (!inputNombre) {
-                mostrarMensaje("ERROR: EL CAMPO DE NOMBRE NO ESTÁ DISPONIBLE. RECARGUE LA PÁGINA."); 
-                return;
-            }
-
             const nombreCliente = inputNombre.value.trim().toUpperCase();
 
             if (carrito.length === 0) { mostrarMensaje("EL CARRITO ESTÁ VACÍO."); return; }
             
             if (nombreCliente === "") {
                 mostrarMensaje("POR FAVOR, INGRESE SU NOMBRE COMPLETO.");
-                inputNombre.focus(); 
+                inputNombre.focus(); // Enfoca el campo para que el usuario lo vea
                 return; 
             }
 
-            let mensaje = `*PEDIDO DE ${nombreCliente}*\n\n`; 
+            let mensaje = `*PEDIDO DE ${nombreCliente}*\n\n`; // Nuevo inicio de mensaje
             
             let total = 0;
             carrito.forEach(item => {
                 const subtotal = item.precio * item.cantidad;
                 total += subtotal;
-                // CORRECCIÓN DE FORMATO: Dos líneas para mejor legibilidad en WhatsApp
-                mensaje += `* ${item.nombre} (x${item.cantidad})\n  - SUBT: $${subtotal.toFixed(2)}\n`; 
+                // El formato final en el chat se verá mejor si se usa el separador '-' en lugar de '*'
+                mensaje += `- ${item.nombre} (x${item.cantidad}) - SUBT: $${subtotal.toFixed(2)}\n`; 
             });
             
             mensaje += `\nTOTAL DE LA COMPRA: $${total.toFixed(2)}`;
-            // MENSAJE FINAL SOLICITADO
-            mensaje += "\n\nGRACIAS POR TU COMPRA! NOS COMUNICAREMOS PARA CONFIRMAR STOCK Y ENTREGA."; 
+            mensaje += "\n\nGRACIAS POR TU COMPRA! NOS COMUNICAREMOS PRONTO PARA CONFIRMAR STOCK Y COORDINAR LA ENTREGA."; 
             
             const numeroTelefono = "543571536378"; 
             window.open(`https://wa.me/${numeroTelefono}?text=${encodeURIComponent(mensaje)}`, '_blank');
@@ -619,7 +607,6 @@
         const renderizarSelectCategorias = (categoriaActual = '') => {
             const selectCategoria = document.getElementById('producto-categoria');
             let htmlOptions = '<option value="">SELECCIONE CATEGORÍA</option>';
-            // Asegúrate de que las categorías se cargan de la variable global
             categorias.forEach(cat => {
                 const selected = cat === categoriaActual ? 'selected' : '';
                 htmlOptions += `<option value="${cat}" ${selected}>${cat}</option>`;
@@ -643,9 +630,16 @@
             const nuevaCat = inputCategoria.value.trim().toUpperCase();
 
             if (!nuevaCat) { mostrarMensaje("VACÍO."); return; }
+            // Comprobación más estricta de la categoría de prueba para que no se pueda manipular
+            if (nuevaCat === 'PRUEBA' && productos.length === 1 && productos[0].id === 9999) {
+                 mostrarMensaje("La categoría 'PRUEBA' está reservada para el aviso de carga fallida.");
+                 return;
+            }
             if (categorias.includes(nuevaCat)) { mostrarMensaje("YA EXISTE."); return; }
 
+
             categorias.push(nuevaCat);
+            categorias.sort(); // Mantiene el orden al añadir
             renderizarSelectCategorias(); 
             renderizarFiltros(); // Actualiza el select de la tienda
             inputCategoria.value = '';
@@ -653,6 +647,11 @@
         };
 
         const eliminarCategoria = (catAEliminar) => {
+            if (catAEliminar === 'PRUEBA' && productos.length === 1 && productos[0].id === 9999) {
+                 mostrarMensaje("No puedes eliminar la categoría de prueba mientras la carga de datos falla.");
+                 return;
+            }
+            
             const productosAsignados = productos.filter(p => p.categoria === catAEliminar).length;
             let mensaje = `¿ELIMINAR "${catAEliminar}"?`;
             if (productosAsignados > 0) mensaje += `\n\nHAY ${productosAsignados} PRODUCTOS ASOCIADOS. SE QUEDARÁN SIN CATEGORÍA.`;
@@ -673,11 +672,17 @@
         const filtrarYRenderizarProductos = () => {
             const listaAdmin = document.getElementById('lista-admin-productos');
             const termino = document.getElementById('buscador-admin').value.trim().toUpperCase();
-            const productosFiltrados = productos.filter(p => p.nombre.includes(termino));
+            
+            // Excluir el producto de carga fallida de la lista del administrador
+            const productosReales = productos.filter(p => p.id !== 9999);
+            
+            const productosFiltrados = productosReales.filter(p => p.nombre.includes(termino));
 
             let htmlContent = '';
             if (productosFiltrados.length === 0 && termino.length > 0) {
                 htmlContent = `<p style="text-align: center;">NO SE ENCONTRARON RESULTADOS.</p>`;
+            } else if (productosReales.length === 0 && termino.length === 0) {
+                htmlContent = `<p style="text-align: center;">Aún no hay productos reales en la lista.</p>`;
             } else {
                 productosFiltrados.forEach(p => {
                     htmlContent += `
@@ -707,6 +712,9 @@
             const categoria = document.getElementById('producto-categoria').value;
 
             if (!nombre || isNaN(precio) || !foto || !categoria) { mostrarMensaje("COMPLETE TODOS LOS CAMPOS."); return; }
+
+            // Si hay un producto de prueba, lo eliminamos antes de añadir/modificar un producto real
+            if (productos.length === 1 && productos[0].id === 9999) productos = []; 
 
             if (id) {
                 const index = productos.findIndex(p => p.id === parseInt(id));
