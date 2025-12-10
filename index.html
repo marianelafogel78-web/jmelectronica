@@ -282,32 +282,62 @@
 
     <script>
         // =================================================================
-        // 1. GESTIÓN DE DATOS Y CARGA (TEMPORALMENTE HARDCODEADO PARA PRUEBAS LOCALES)
-        // **IMPORTANTE: Estos datos son TEMPORALES para que puedas ver y probar la tienda sin errores de carga local.**
-        // **Si subes esto a un servidor (GitHub, etc.), elimina estos datos temporales y usa el código original de 'cargarDatosIniciales'.**
+        // 1. GESTIÓN DE DATOS Y CARGA (CORREGIDO: AHORA LEYENDO JSON)
         // =================================================================
         
-        let categorias = ["CARGADORES", "ACCESORIOS", "AURICULARES"];
-        
-        let productos = [
-            { id: 1, nombre: "CARGADOR TURBO", precio: 15000.00, foto: "https://via.placeholder.com/300/191970/FFFFFF?text=CARGADOR+TURBO", categoria: "CARGADORES" },
-            { id: 2, nombre: "FUNDA SILICONA IPHONE", precio: 5500.00, foto: "https://via.placeholder.com/300/191970/FFFFFF?text=FUNDA+IPHONE", categoria: "ACCESORIOS" },
-            { id: 3, nombre: "AURICULAR BLUETOOTH SPORT", precio: 22000.00, foto: "https://via.placeholder.com/300/191970/FFFFFF?text=AURICULAR+SPORT", categoria: "AURICULARES" },
-            { id: 4, nombre: "CABLE USB REFORZADO", precio: 7000.00, foto: "https://via.placeholder.com/300/191970/FFFFFF?text=CABLE+REFORZADO", categoria: "ACCESORIOS" }
-        ];
+        // Se inicializan como arrays vacíos, serán poblados por fetch.
+        let categorias = [];
+        let productos = [];
 
         let carrito = JSON.parse(localStorage.getItem('carritoMM')) || []; 
         const CLAVE_ADMIN = "MM2025"; 
 
-        // ESTA FUNCIÓN AHORA SÓLO INICIALIZA LA TIENDA USANDO LOS DATOS TEMPORALES
-        function cargarDatosIniciales() {
-            // Llama al nuevo renderizador de filtros
-            renderizarFiltros(); 
-            // Asegura que al cargar, se muestren TODOS los productos
-            filtrarProductos('TODOS');
-            renderizarCarrito();
-            document.getElementById('loading-message').style.display = 'none';
+        /**
+         * Función asíncrona para cargar los datos de productos y categorías 
+         * desde los archivos JSON en el servidor (GitHub Pages).
+         */
+        async function cargarDatosIniciales() {
+            document.getElementById('loading-message').textContent = 'CARGANDO PRODUCTOS...';
+            document.getElementById('loading-message').style.display = 'block';
+
+            try {
+                // Ejecutar las dos peticiones fetch en paralelo
+                const [productosResponse, categoriasResponse] = await Promise.all([
+                    fetch('productos.json'),
+                    fetch('categorias.json')
+                ]);
+
+                if (!productosResponse.ok || !categoriasResponse.ok) {
+                    throw new Error('Error al cargar uno o ambos archivos JSON. Código de estado HTTP no OK.');
+                }
+
+                // Parsear las respuestas JSON
+                const productosData = await productosResponse.json();
+                const categoriasData = await categoriasResponse.json();
+
+                // Asignar los datos a las variables globales
+                productos = productosData;
+                categorias = categoriasData;
+
+                // Inicializar la interfaz después de cargar los datos
+                renderizarFiltros(); 
+                filtrarProductos('TODOS');
+                renderizarCarrito();
+                
+            } catch (error) {
+                console.error("No se pudieron cargar los datos de JSON:", error);
+                // Mostrar un mensaje de error claro al usuario
+                document.getElementById('loading-message').style.color = 'red';
+                document.getElementById('loading-message').textContent = '¡ERROR AL CARGAR PRODUCTOS! Verifique que los archivos JSON existen y son válidos. Detalles en la consola.';
+
+            } finally {
+                // Ocultar el mensaje de carga solo si no hubo un error de visualización
+                if (document.getElementById('loading-message').style.color !== 'red') {
+                    document.getElementById('loading-message').style.display = 'none';
+                }
+            }
         }
+
 
         // =================================================================
         // 2. LÓGICA DE DESCARGA DE JSON
@@ -496,6 +526,12 @@
                 carrito.forEach(item => {
                     const subtotal = item.precio * item.cantidad;
                     total += subtotal;
+                    
+                    // Buscamos el producto para obtener la foto (si es que la queremos)
+                    // Si se añade la imagen en un futuro, se modificaría esta sección.
+                    // const productoOriginal = productos.find(p => p.id === item.id);
+                    // const fotoUrl = productoOriginal ? productoOriginal.foto : '';
+
                     htmlContent += `
                         <div class="carrito-item">
                             <span class="item-nombre">${item.nombre}</span>
@@ -538,7 +574,7 @@
             });
         };
 
-        // FUNCIÓN CORREGIDA PARA WHATSAPP: MEJOR FORMATO Y MENSAJE FINAL SOLICITADO
+        // FUNCIÓN FINAL VERIFICADA CON EL MENSAJE SOLICITADO
         const generarMensajeWhatsApp = () => {
             const inputNombre = document.getElementById('nombre-cliente-whatsapp');
             
@@ -557,7 +593,6 @@
                 return; 
             }
 
-            // El nombre aparece como título claro.
             let mensaje = `*PEDIDO DE ${nombreCliente}*\n\n`; 
             
             let total = 0;
@@ -569,7 +604,7 @@
             });
             
             mensaje += `\nTOTAL DE LA COMPRA: $${total.toFixed(2)}`;
-            // AQUI ESTÁ EL MENSAJE FINAL SOLICITADO EN MAYÚSCULAS
+            // MENSAJE FINAL SOLICITADO
             mensaje += "\n\nGRACIAS POR TU COMPRA! NOS COMUNICAREMOS PARA CONFIRMAR STOCK Y ENTREGA."; 
             
             const numeroTelefono = "543571536378"; 
@@ -584,6 +619,7 @@
         const renderizarSelectCategorias = (categoriaActual = '') => {
             const selectCategoria = document.getElementById('producto-categoria');
             let htmlOptions = '<option value="">SELECCIONE CATEGORÍA</option>';
+            // Asegúrate de que las categorías se cargan de la variable global
             categorias.forEach(cat => {
                 const selected = cat === categoriaActual ? 'selected' : '';
                 htmlOptions += `<option value="${cat}" ${selected}>${cat}</option>`;
